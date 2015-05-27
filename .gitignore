@@ -1,0 +1,7 @@
+/packages/
+!packages/repository.config
+/Umbraco.Lucene.Linq.Tests/bin
+/Umbraco.Lucene.Linq.Tests/obj
+/Umbraco.Lucene.Linq/obj
+/Umbraco.Lucene.Linq/bin
+*.suo
