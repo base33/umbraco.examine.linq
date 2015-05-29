@@ -7,7 +7,6 @@ using Umbraco.Lucene.Linq.Attributes;
 
 namespace Umbraco.Lucene.Linq.Models
 {
-    [RecordType("BlogPost")]
     public class Result
     {
         public string Name { get; set; }

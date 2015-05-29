@@ -23,7 +23,7 @@ namespace Umbraco.Lucene.Linq.Extensions
             return value;
         }
 
-        public static bool Fuzzy(this bool value, float fuzzy)
+        public static bool Fuzzy(this bool value, double fuzzy)
         {
             return value;
         }

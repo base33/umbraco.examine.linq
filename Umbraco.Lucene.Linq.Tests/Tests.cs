@@ -15,10 +15,14 @@ namespace Umbraco.Lucene.Linq.Tests
         [TestMethod]
         public void DoSomething()
         {
+            StringBuilder query = new StringBuilder();
             var index = new Index<Result>();
-            var results = index.Where(r => 
-                r.Name.Contains("boo").Boost(10) 
-                && (r.Name.ContainsAny("something", "else", "hello").Boost(10) || r.Name == "home")
+            var results = index.Where(r =>
+                r.AnInt <= 2 
+                && r.Name.Contains("content page").Fuzzy(0.2).Boost(10) 
+                && (r.Name.ContainsAny("something", "else", "hello").Boost(10) || r.Name == "home boo")
+                && r.CreateDate > new DateTime(2011, 11, 10)
+                && r.CreateDate < DateTime.Now
                 ).ToList();
 
             //IEnumerable<Result> results = (from r in index.AsQueryable()

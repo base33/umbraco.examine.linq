@@ -13,6 +13,7 @@ namespace Umbraco.Lucene.Linq
         public StringBuilder query;
         public Stack<StringBuilder> currentParts;
         public bool bracketsEnabled = true;
+        public double fuzzy = 0;
 
         public StringBuilder currentPart
         {
@@ -36,8 +37,6 @@ namespace Umbraco.Lucene.Linq
 
             VisitExpression(expression.Left);
 
-            // In production code, handle this via lookup tables.
-            
             switch (expression.NodeType)
             {
                 case ExpressionType.Equal:
@@ -49,19 +48,19 @@ namespace Umbraco.Lucene.Linq
                     break;
 
                 case ExpressionType.GreaterThan:
-                    currentPart.Append(" gt ");
+                    currentPart.Append("gt"); //constant expression uses this to decide how to output the value
                     break;
 
                 case ExpressionType.GreaterThanOrEqual:
-                    currentPart.Append(" ge ");
+                    currentPart.Append("ge"); //constant expression uses this to decide how to output the value
                     break;
 
                 case ExpressionType.LessThan:
-                    currentPart.Append(" lt ");
+                    currentPart.Append("lt"); //constant expression uses this to decide how to output the value
                     break;
 
                 case ExpressionType.LessThanOrEqual:
-                    currentPart.Append(" le ");
+                    currentPart.Append("le"); //constant expression uses this to decide how to output the value
                     break;
 
                 case ExpressionType.AndAlso:
@@ -100,12 +99,36 @@ namespace Umbraco.Lucene.Linq
         {
             string value = "";
 
-            if (expression.Value is string[])
+            if(expression.Value is string)
+            {
+                value = expression.Value.ToString();
+                if (value.Contains(' '))
+                    value = string.Format("\"{0}\"", value);
+            }
+            else if (expression.Value is string[])
                 value = string.Join(" ", (string[])expression.Value);
             else if (expression.Value is IEnumerable<string>)
                 value = string.Join(" ", (IEnumerable<string>)expression.Value);
             else if (expression.Value is DateTime)
-                value = ((DateTime)expression.Value).ToString("o");
+            {
+                var formattedDateTime = ((DateTime)expression.Value).ToString("o");
+                string operation = currentPart.ToString().Substring(currentPart.Length - 2);
+                if(!handleRangeOperation(formattedDateTime, operation, ref value))
+                {
+                    value = formattedDateTime;
+                }
+            }
+            else if(expression.Value is int)
+            {
+                var formattedInt = ((int)expression.Value).ToString();
+                string operation = currentPart.ToString().Substring(currentPart.Length - 2);
+                if (!handleRangeOperation(formattedInt, operation, ref value))
+                {
+                    value = formattedInt;
+                }
+            }
+            else if (expression.Value is bool || expression.Value is Boolean)
+                value = ((bool)expression.Value) ? "1" : "0";
             else
                 value = expression.Value.ToString();
 
@@ -124,7 +147,8 @@ namespace Umbraco.Lucene.Linq
                 case "Contains":
                     currentPart.Append("+");
                     VisitExpression(expression.Object);
-                    currentPart.AppendFormat("{0}", string.Join(" ", expression.Arguments));
+                    VisitConstantExpression((ConstantExpression)expression.Arguments[0]);
+                    currentPart.Append(getFuzzyString());
                     break;
                 case "ContainsAny":
                     //in this instance, the first argument is an expression to the value, 
@@ -141,12 +165,16 @@ namespace Umbraco.Lucene.Linq
                     currentPart.Append(expression.Arguments);
                     break;
                 case "Boost":
-                    //in this instance, the first argument is an expression to the value, 
-                    //so we will disable brackets and visit the expression
-                    bracketsEnabled = false;
                     VisitExpression(expression.Arguments[0]);
                     VisitExpression(expression.Object);
                     currentPart.AppendFormat("^{0}", expression.Arguments[1]);
+                    break;
+                case "Fuzzy":
+                    bracketsEnabled = false;
+                    fuzzy = (double)((ConstantExpression)expression.Arguments[1]).Value;
+                    VisitExpression(expression.Arguments[0]);
+                    VisitExpression(expression.Object);
+                    fuzzy = 0;
                     bracketsEnabled = true;
                     break;
             }
@@ -156,6 +184,32 @@ namespace Umbraco.Lucene.Linq
             currentParts.Pop();
 
             return expression;
+        }
+
+        protected bool handleRangeOperation(string formattedValue, string operation, ref string value)
+        {
+            switch (operation)
+            {
+                case "lt":
+                    value = string.Format("* TO {0}]", formattedValue);
+                    currentPart.Length = currentPart.Length - 2; //clear the last 2 characters
+                    break;
+                case "gt":
+                    value = string.Format("[{0} TO *]", formattedValue);
+                    currentPart.Length = currentPart.Length - 2; //clear the last 2 characters
+                    break;
+                case "le":
+                    value = string.Format("[* TO {0}]", formattedValue);
+                    currentPart.Length = currentPart.Length - 2; //clear the last 2 characters
+                    break;
+                case "ge":
+                    value = string.Format("[{0} TO *]", formattedValue);
+                    currentPart.Length = currentPart.Length - 2; //clear the last 2 characters
+                    break;
+                default: //is equals
+                    return false;
+            }
+            return true;
         }
 
         public void addStartBracket()
@@ -168,6 +222,11 @@ namespace Umbraco.Lucene.Linq
         {
             if (bracketsEnabled)
                 query.Append(")");
+        }
+
+        protected string getFuzzyString()
+        {
+            return fuzzy > 0 ? "~" + fuzzy.ToString() : "";
         }
     }
 }

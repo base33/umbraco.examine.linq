@@ -14,7 +14,7 @@ namespace Umbraco.Lucene.Linq
         public Index()
             : base(new DefaultQueryProvider(typeof(Index<>), QueryParser.CreateDefault(), new Executor()))
         {
-            
+
         }
 
         public Index(IQueryParser queryParser, IQueryExecutor executor)
