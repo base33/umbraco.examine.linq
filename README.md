@@ -8,7 +8,7 @@ Lets start with some code examples.  Say, I want to get all words that contains 
 @using Umbraco.Examine.Linq.Extensions
 
 var index = new Index<Result>();
-var results = index.Where(c => c.Name.Contains("umbraco") && c.NodeTypeAlias == "textpage").ToList();
+IEnumberable<Result> results = index.Where(c => c.Name.Contains("umbraco") && c.NodeTypeAlias == "textpage").ToList();
 ```
 Or alternatively,
 ```C#
@@ -16,7 +16,7 @@ Or alternatively,
 @using Umbraco.Examine.Linq.Extensions
 
 var index = new Index<Result>();
-var results = (from r in index
+IEnumberable<Result> results = (from r in index
                 where r.Name.Contains("umbraco") && r.NodeTypeAlias == "textpage"
                 select r).ToList();
 ```
@@ -39,6 +39,27 @@ public class BlogPost
     [Field("createDate")]
     public DateTime CreateDate { get; set; }
     
+    public Examine.SearchResult Result { get; set; } //will automatically set the result from Examine
 }
 
 ```
+There are two attributes being applied.  The **NodeTypeAlias** attribute will automatically add the filter to the search, so you will only see results of that type.  The **Field** attribute declares that name of the field in the index, if nothing is specified, it will default to the property name.
+The data will be mapped directly from the Examine SearchResult into your custom class.  If you specify a property with the type Examine.SearchResult, it will automatically assign the result to your class, if you wanted access to scores etc.
+
+So, say you wanted to find all *BlogPosts'* where the summary contains the terms "fishing" or "cod".  The query will look like this:
+```C#
+@using Umbraco.Examine.Linq
+@using Umbraco.Examine.Linq.Extensions
+
+var index = new Index<BlogPost>();
+IEnumerable<BlogPost> results = index.Where(c => c.Name.ContainsAny("fishing", "cod")).ToList();
+```
+##Expression logic
+**string** logic:
+
+
+Extension Method Name  | Description | Example
+--------------|--------------|--------------
+Contains  | Whether the field contains the value | r => r.Contains("foo")
+ContainsAny  | Whether the field contains any of the values | r => r.ContainsAny("foo", "bar", "etc")
+ContainsAll | Whether the field contains all of the values | r => r.ContainsAll("foo", "bar", "etc")
