@@ -58,8 +58,40 @@ IEnumerable<BlogPost> results = index.Where(c => c.Name.ContainsAny("fishing", "
 **string** logic:
 
 
-Extension Method Name  | Description | Example
+Extension method / operator  | Description | Example
 --------------|--------------|--------------
-Contains  | Whether the field contains the value | r => r.Contains("foo")
-ContainsAny  | Whether the field contains any of the values | r => r.ContainsAny("foo", "bar", "etc")
-ContainsAll | Whether the field contains all of the values | r => r.ContainsAll("foo", "bar", "etc")
+== (operator) | Whether the field contains the value | r => r.Name == "foo"
+Contains(term)  | Whether the field contains the value | r => r.Name.Contains("foo")
+Contains(term, fuzzy)  | Whether the field contains the value with Fuzzy enabled | r => r.Name.Contains("foo", 0.8)
+ContainsAny(term)  | Whether the field contains any of the values | r => r.Name.ContainsAny("foo", "bar", "etc")
+ContainsAll(term) | Whether the field contains all of the values | r => r.Name.ContainsAll("foo", "bar", "etc")
+
+**bool** logic:
+
+
+Extension method / operator  | Description | Example
+--------------|--------------|--------------
+== (operator) | Whether the field is true or false | r => r.UmbracoNaviHide == false
+
+**More logic extension methods on the way, to help with ranges.**
+
+##Boosting
+Boosting allows you to boosts results that meet a specific condition.  For example, you may want to boost the score for results where the content contains the word "Umbraco".  Alternatively, you may want to boost results where the content contains the word "Umbraco" or summary contains "Events".  Lets look at implementing both:
+
+First Query: Get results where the name contains the term, and boost where content contains the word "Umbraco"
+```C#
+string term = GetTerm(); //get the search term - your implementation
+var index = new Index<BlogPost>();
+IEnumerable<BlogPost> results = index.Where(c => c.Name.Contains(term) 
+                                              && c.Content.Contains("Umbraco").Boost(10)
+                                            ).ToList();
+```
+
+Second Query: Get results where the name contains the term, and boost where the content contains the word "Umbraco" or the summary contains "Event":
+```C#
+string term = GetTerm(); //get the search term - your implementation
+var index = new Index<BlogPost>();
+IEnumerable<BlogPost> results = index.Where(c => c.Name.Contains(term) 
+                                  && (c.Content.Contains("Umbraco") || c.Summary.Contains("event")).Boost(10)
+                                ).ToList();
+```
