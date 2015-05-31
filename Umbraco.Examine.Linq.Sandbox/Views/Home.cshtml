@@ -1,0 +1,27 @@
+﻿@using System.Linq;
+@using Umbraco.Examine.Linq.Extensions;
+
+@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+              
+@{
+    Layout = "Master.cshtml";
+    System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
+    sw.Start();
+    var mm = new Umbraco.Examine.Linq.Index<Umbraco.Examine.Linq.Models.Result>();
+    //var results = mm.Where(c => c.Name == "u*").ToList();
+
+    var results = (from r in mm
+                   where r.Name.Contains("u*")
+                   select r).ToList();
+    sw.Stop();
+    
+    
+}
+<h1>Processing time: @sw.ElapsedMilliseconds ms</h1>
+<ul>
+    @foreach(var result in results)
+    {
+        <li>@result.Id @result.Name - @result.NodeTypeAlias</li>
+    }
+</ul>
+@CurrentPage.GetGridHtml("content", "fanoe")

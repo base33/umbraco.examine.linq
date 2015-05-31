@@ -1,0 +1,42 @@
+
+-------------------------------------------------------------------------------
+   ROBOCOPY     ::     Robust File Copy for Windows                              
+-------------------------------------------------------------------------------
+
+  Started : 30 May 2015 23:20:40
+   Source : D:\umbraco.lucene.linq\Umbraco.Lucene.Linq.Tests\bin\
+     Dest : D:\umbraco.lucene.linq\Umbraco.Lucene.Linq.Tests\App_Data\NuGetBackup\20150530-232039\bin\
+
+    Files : *.*
+	    
+  Options : *.* /S /E /DCOPY:DA /COPY:DAT /R:1000000 /W:30 
+
+------------------------------------------------------------------------------
+
+	                   0	D:\umbraco.lucene.linq\Umbraco.Lucene.Linq.Tests\bin\
+	  New Dir         11	D:\umbraco.lucene.linq\Umbraco.Lucene.Linq.Tests\bin\Debug\
+	    New File  		   94720	Examine.dll  0%  100%  
+	    New File  		  249344	Examine.pdb  0%   52%  100%  
+	    New File  		  786432	Lucene.Net.dll  0%   33%   66%  100%  
+	    New File  		   1.5 m	Lucene.Net.xml  0%   16%   33%   49%   66%   82%   99%  100%  
+	    New File  		  213504	Remotion.Linq.dll  0%   61%  100%  
+	    New File  		  354554	Remotion.Linq.xml  0%   36%   73%  100%  
+	    New File  		   15872	Umbraco.Lucene.Linq.dll  0%  100%  
+	    New File  		   38400	Umbraco.Lucene.Linq.pdb  0%  100%  
+	    New File  		    6656	Umbraco.Lucene.Linq.Tests.dll  0%  100%  
+	    New File  		     911	Umbraco.Lucene.Linq.Tests.dll.config  0%  100%  
+	    New File  		   13824	Umbraco.Lucene.Linq.Tests.pdb  0%  100%  
+
+------------------------------------------------------------------------------
+
+               Total    Copied   Skipped  Mismatch    FAILED    Extras
+    Dirs :         2         1         0         0         0         0
+   Files :        11        11         0         0         0         0
+   Bytes :    3.20 m    3.20 m         0         0         0         0
+   Times :   0:00:00   0:00:00                       0:00:00   0:00:00
+
+
+   Speed :            74705666 Bytes/sec.
+   Speed :            4274.692 MegaBytes/min.
+   Ended : 30 May 2015 23:20:40
+

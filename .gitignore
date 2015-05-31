@@ -5,3 +5,17 @@
 /Umbraco.Lucene.Linq/obj
 /Umbraco.Lucene.Linq/bin
 *.suo
+/Umbraco.Examine.Linq.Sandbox/App_Data/cache
+/Umbraco.Examine.Linq.Sandbox/App_Data/Logs
+/Umbraco.Examine.Linq.Sandbox/App_Data/NuGetBackup
+/Umbraco.Examine.Linq.Sandbox/App_Data/packages
+/Umbraco.Examine.Linq.Sandbox/App_Data/preview
+/Umbraco.Examine.Linq.Sandbox/App_Data/TEMP
+/Umbraco.Examine.Linq.Sandbox/App_Data/access.config
+/Umbraco.Examine.Linq.Sandbox/App_Data/umbraco.config
+/Umbraco.Examine.Linq.Sandbox/bin
+/Umbraco.Examine.Linq.Sandbox/obj
+/Umbraco.Examine.Linq/obj
+/Umbraco.Examine.Linq.Tests/bin
+/Umbraco.Examine.Linq.Tests/obj
+/Umbraco.Examine.Linq/bin

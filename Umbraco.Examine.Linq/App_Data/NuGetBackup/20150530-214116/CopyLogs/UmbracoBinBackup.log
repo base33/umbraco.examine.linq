@@ -1,0 +1,36 @@
+
+-------------------------------------------------------------------------------
+   ROBOCOPY     ::     Robust File Copy for Windows                              
+-------------------------------------------------------------------------------
+
+  Started : 30 May 2015 21:41:20
+   Source : D:\umbraco.lucene.linq\Umbraco.Lucene.Linq\bin\
+     Dest : D:\umbraco.lucene.linq\Umbraco.Lucene.Linq\App_Data\NuGetBackup\20150530-214116\bin\
+
+    Files : *.*
+	    
+  Options : *.* /S /E /DCOPY:DA /COPY:DAT /R:1000000 /W:30 
+
+------------------------------------------------------------------------------
+
+	                   0	D:\umbraco.lucene.linq\Umbraco.Lucene.Linq\bin\
+	  New Dir          4	D:\umbraco.lucene.linq\Umbraco.Lucene.Linq\bin\Debug\
+	    New File  		  213504	Remotion.Linq.dll  0%   61%  100%  
+	    New File  		  354554	Remotion.Linq.xml  0%   36%   73%  100%  
+	    New File  		   12288	Umbraco.Lucene.Linq.dll  0%  100%  
+	    New File  		   34304	Umbraco.Lucene.Linq.pdb  0%  100%  
+	  New Dir          0	D:\umbraco.lucene.linq\Umbraco.Lucene.Linq\bin\Release\
+
+------------------------------------------------------------------------------
+
+               Total    Copied   Skipped  Mismatch    FAILED    Extras
+    Dirs :         3         2         0         0         0         0
+   Files :         4         4         0         0         0         0
+   Bytes :   600.2 k   600.2 k         0         0         0         0
+   Times :   0:00:02   0:00:02                       0:00:00   0:00:00
+
+
+   Speed :              285088 Bytes/sec.
+   Speed :              16.312 MegaBytes/min.
+   Ended : 30 May 2015 21:41:22
+
