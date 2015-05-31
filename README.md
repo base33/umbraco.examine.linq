@@ -5,6 +5,6 @@ LINQ to Lucene query provider for Umbraco.
 @using Umbraco.Examine.Linq
 @using Umbraco.Examine.Linq.Extensions
 
-var mm = new .Index<Umbraco.Examine.Linq.Models.Result>();
-var results = mm.Where(c => c.Name == "u*" && (c.NodeTypeAlias == "textpage").Boost(10)).ToList();
+var mm = new Index<Result>();
+var results = mm.Where(c => c.Name == "u*" && c.NodeTypeAlias == "textpage").ToList();
 ```
