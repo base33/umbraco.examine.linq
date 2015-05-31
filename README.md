@@ -1,5 +1,5 @@
 ## What is Umbraco.Examine.Linq?
-This project allows you to query the Lucene indexes using LINQ and your own classes.  This project comes with a basic Result class which allows you to use this straight out of the box.
+This project allows you to query the Lucene indexes using LINQ based on your own classes.  This project comes with a basic Result class which allows you to use this straight out of the box.
 
 ###Code example
 Lets start with some code examples.  Say, I want to get all words that contains "umbraco" and it has to be a text page.  This is how the code would look:
