@@ -20,7 +20,23 @@ IEnumberable<Result> results = (from r in index
                 where r.Name.Contains("umbraco") && r.NodeTypeAlias == "textpage"
                 select r).ToList();
 ```
-Above, we are creating a new index, setting the type we wish to query.  See Index cunstructor section for more information on how you can change the target of your search.  By default, the "ExternalSearcher" is used.  Anyway, then we perform the search using Where, and ToList() at the end that executes the query.
+Above, we are creating a new index, setting the type we wish to query.  See Index constructor section for more information on how you can change the target of your search.  By default, the "ExternalSearcher" is used.  Anyway, then we perform the search using Where, and ToList() at the end that executes the query.
+
+##Installation
+
+Install via Nuget using the command below.  Then add the config manually in step 2.
+
+#####Step 1:
+
+PM> Install-Package LINQToExamine
+
+#####Step 2 (I will automate this as part of step 1 asap):
+
+Instert in > Configuration > Compilation > Assemblies
+
+<add assembly="System.Runtime, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+
+<add assembly="System.Linq.Expressions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
 
 ##Index Constructor - changing the default 
 
@@ -64,7 +80,7 @@ var index = new Index<BlogPost>();
 IEnumerable<BlogPost> results = index.Where(c => c.Name.ContainsAny("fishing", "cod")).ToList();
 ```
 ##Expression logic
-**string** logic:
+####string logic:
 
 
 Extension method / operator  | Description | Example
@@ -76,13 +92,38 @@ Contains(term, fuzzy)  | Whether the field contains the value with Fuzzy enabled
 ContainsAny(term)  | Whether the field contains any of the values | r => r.Name.ContainsAny("foo", "bar", "etc")
 All these support NOT (!)
 
-**bool** logic:
+####bool logic:
 
 
 Extension method / operator  | Description | Example
 --------------|--------------|--------------
 == (operator) | Whether the field is true or false | r => r.UmbracoNaviHide == false
 != (operator) | Whether the field is not true or false | r => r.UmbracoNaviHide == false
+
+####int and double logic:
+
+
+operator  | Description | Example
+--------------|--------------|--------------
+== (operator) | Whether the field is equal | r => r.Rating == 4
+!= (operator) | Whether the field is not equal | r => r.Rating != 4
+< (operator) | Whether the field is less than | r => r.Rating < 4
+<= (operator) | Whether the field is less than or equal to | r => r.Rating <= 4
+> (operator) | Whether the field is greater than | r => r.Rating > 4
+>= (operator) | Whether the field is greater than or equal to | r => r.Rating >= 4
+
+####DateTime logic:
+
+
+operator  | Description | Example
+--------------|--------------|--------------
+== (operator) | Whether the field is equal | r => r.CreatedDate == date
+!= (operator) | Whether the field is not equal | r => r.CreatedDate != date
+< (operator) | Whether the field is less than | r => r.CreatedDate < date
+<= (operator) | Whether the field is less than or equal to | r => r.CreatedDate <= date
+> (operator) | Whether the field is greater than | r => r.CreatedDate > date
+>= (operator) | Whether the field is greater than or equal to | r => r.CreatedDate >= date
+
 
 **More logic extension methods on the way, to help with ranges.**
 
@@ -106,3 +147,18 @@ IEnumerable<BlogPost> results = index.Where(c => c.Name.Contains(term)
                                   && (c.Content.Contains("Umbraco") || c.Summary.Contains("event")).Boost(10)
                                 ).ToList();
 ```
+
+##Wildcard Searches
+Wildcard searches are easy to do.  Just specify the * in the text you are querying.
+
+For example:
+```C#
+@using Umbraco.Examine.Linq
+@using Umbraco.Examine.Linq.Extensions
+
+var index = new Index<Result>();
+IEnumberable<Result> results = index.Where(c => c.Name.Contains("umbr*") && c.NodeTypeAlias == "textpage").ToList();
+```
+
+##New in 1.0.4
+- Ability to query on DateTimes, ints and doubles.
