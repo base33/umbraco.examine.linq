@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>LINQToExamine</id>
+    <version>1.0.0</version>
+    <authors>Craig Noble</authors>
+    <description>This project allows you to query the Lucene indexes using LINQ based on your own classes.</description>
+    <language>en-US</language>
+    <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
+	<dependencies>
+	   <dependency id="Remotion.Linq" version="1.15.15" />
+	</dependencies>
+	<references>
+		<reference file="Umbraco.Examine.Linq.dll" />
+	</references>
+  </metadata>
+  <files>
+	<file src="Umbraco.Examine.Linq\bin\Debug\Umbraco.Examine.Linq.dll" target="lib" />
+	<file src="Umbraco.Examine.Linq.Sandbox\Web.config.transform" target="" />
+  </files>
+</package>
