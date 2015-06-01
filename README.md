@@ -64,7 +64,7 @@ var index = new Index<BlogPost>();
 IEnumerable<BlogPost> results = index.Where(c => c.Name.ContainsAny("fishing", "cod")).ToList();
 ```
 ##Expression logic
-**string** logic:
+####string logic:
 
 
 Extension method / operator  | Description | Example
@@ -76,7 +76,7 @@ Contains(term, fuzzy)  | Whether the field contains the value with Fuzzy enabled
 ContainsAny(term)  | Whether the field contains any of the values | r => r.Name.ContainsAny("foo", "bar", "etc")
 All these support NOT (!)
 
-**bool** logic:
+####bool logic:
 
 
 Extension method / operator  | Description | Example
@@ -84,7 +84,7 @@ Extension method / operator  | Description | Example
 == (operator) | Whether the field is true or false | r => r.UmbracoNaviHide == false
 != (operator) | Whether the field is not true or false | r => r.UmbracoNaviHide == false
 
-**int and double** logic:
+####int and double logic:
 
 
 operator  | Description | Example
@@ -96,7 +96,7 @@ operator  | Description | Example
 > (operator) | Whether the field is greater than | r => r.CreatedDate > date
 >= (operator) | Whether the field is greater than or equal to | r => r.CreatedDate >= date
 
-**DateTime** logic:
+####DateTime logic:
 
 
 operator  | Description | Example
