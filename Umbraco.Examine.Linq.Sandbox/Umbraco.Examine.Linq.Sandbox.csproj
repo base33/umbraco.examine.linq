@@ -189,6 +189,10 @@
     <Reference Include="umbraco.editorControls">
       <HintPath>..\packages\UmbracoCms.Core.7.2.5\lib\umbraco.editorControls.dll</HintPath>
     </Reference>
+    <Reference Include="Umbraco.Examine.Linq, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\LINQToExamine.1.0.3\lib\Umbraco.Examine.Linq.dll</HintPath>
+    </Reference>
     <Reference Include="umbraco.MacroEngines">
       <HintPath>..\packages\UmbracoCms.Core.7.2.5\lib\umbraco.MacroEngines.dll</HintPath>
     </Reference>
@@ -258,12 +262,6 @@
   <ItemGroup>
     <Compile Include="Models\BlogPost.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Umbraco.Examine.Linq\Umbraco.Examine.Linq.csproj">
-      <Project>{86684269-83fd-4a57-b916-676c1cc85d18}</Project>
-      <Name>Umbraco.Examine.Linq</Name>
-    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

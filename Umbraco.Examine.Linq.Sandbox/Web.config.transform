@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0"?>
 <configuration xmlns:xdt="http://schemas.microsoft.com/XML-Document-Transform">
   <system.web>
-    <compilation defaultLanguage="c#" debug="true" batch="false" targetFramework="4.5">
+    <compilation>
       <assemblies>
-        <add xdt:Transform="InsertIfMissing" assembly="System.Runtime, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-        <add xdt:Transform="InsertIfMissing" assembly="System.Linq.Expressions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+        <add assembly="System.Runtime, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+        <add assembly="System.Linq.Expressions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
       </assemblies>
     </compilation>
   </system.web>
