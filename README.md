@@ -20,12 +20,21 @@ IEnumberable<Result> results = (from r in index
                 where r.Name.Contains("umbraco") && r.NodeTypeAlias == "textpage"
                 select r).ToList();
 ```
+Above, we are creating a new index, setting the type we wish to query.  See Index cunstructor section for more information on how you can change the target of your search.  By default, the "ExternalSearcher" is used.  Anyway, then we perform the search using Where, and ToList() at the end that executes the query.
+
+##Index Constructor - changing the default 
+
+
+Constructor  | Description
+--------------|--------------
+Index<T>(string searcherName") | Set which Umbraco Searcher to use (see UmbracoSettings.config)
+Index<T>(ISearcher searcher) | Allows you to set up and target your own Lucene index.  The query is passed to you to execute.  All you need to do is implement the ISearcher interface.
 
 ##How to use your own custom classes?
 ```C#
 using Umbraco.Examine.Linq.Attributes
 
-[NodeTypeAlias("BlogPost")]
+[NodeTypeAlias("BlogPost")] //completely optional!!!
 public class BlogPost
 {
     [Field("nodeName")]
