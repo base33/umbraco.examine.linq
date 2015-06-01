@@ -84,6 +84,31 @@ Extension method / operator  | Description | Example
 == (operator) | Whether the field is true or false | r => r.UmbracoNaviHide == false
 != (operator) | Whether the field is not true or false | r => r.UmbracoNaviHide == false
 
+**int and double** logic:
+
+
+operator  | Description | Example
+--------------|--------------|--------------
+== (operator) | Whether the field is equal | r => r.UmbracoNaviHide == false
+!= (operator) | Whether the field is not equal | r => r.UmbracoNaviHide == false
+< (operator) | Whether the field is less than | r => r.CreatedDate < date
+<= (operator) | Whether the field is less than or equal to | r => r.CreatedDate <= date
+> (operator) | Whether the field is greater than | r => r.CreatedDate > date
+>= (operator) | Whether the field is greater than or equal to | r => r.CreatedDate >= date
+
+**DateTime** logic:
+
+
+operator  | Description | Example
+--------------|--------------|--------------
+== (operator) | Whether the field is equal | r => r.UmbracoNaviHide == false
+!= (operator) | Whether the field is not equal | r => r.UmbracoNaviHide == false
+< (operator) | Whether the field is less than | r => r.CreatedDate < date
+<= (operator) | Whether the field is less than or equal to | r => r.CreatedDate <= date
+> (operator) | Whether the field is greater than | r => r.CreatedDate > date
+>= (operator) | Whether the field is greater than or equal to | r => r.CreatedDate >= date
+
+
 **More logic extension methods on the way, to help with ranges.**
 
 ##Boosting
