@@ -89,20 +89,20 @@ Extension method / operator  | Description | Example
 
 operator  | Description | Example
 --------------|--------------|--------------
-== (operator) | Whether the field is equal | r => r.UmbracoNaviHide == false
-!= (operator) | Whether the field is not equal | r => r.UmbracoNaviHide == false
-< (operator) | Whether the field is less than | r => r.CreatedDate < date
-<= (operator) | Whether the field is less than or equal to | r => r.CreatedDate <= date
-> (operator) | Whether the field is greater than | r => r.CreatedDate > date
->= (operator) | Whether the field is greater than or equal to | r => r.CreatedDate >= date
+== (operator) | Whether the field is equal | r => r.Rating == 4
+!= (operator) | Whether the field is not equal | r => r.Rating != 4
+< (operator) | Whether the field is less than | r => r.Rating < 4
+<= (operator) | Whether the field is less than or equal to | r => r.Rating <= 4
+> (operator) | Whether the field is greater than | r => r.Rating > 4
+>= (operator) | Whether the field is greater than or equal to | r => r.Rating >= 4
 
 ####DateTime logic:
 
 
 operator  | Description | Example
 --------------|--------------|--------------
-== (operator) | Whether the field is equal | r => r.UmbracoNaviHide == false
-!= (operator) | Whether the field is not equal | r => r.UmbracoNaviHide == false
+== (operator) | Whether the field is equal | r => r.CreatedDate == date
+!= (operator) | Whether the field is not equal | r => r.CreatedDate != date
 < (operator) | Whether the field is less than | r => r.CreatedDate < date
 <= (operator) | Whether the field is less than or equal to | r => r.CreatedDate <= date
 > (operator) | Whether the field is greater than | r => r.CreatedDate > date
