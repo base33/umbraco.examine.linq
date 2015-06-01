@@ -131,3 +131,18 @@ IEnumerable<BlogPost> results = index.Where(c => c.Name.Contains(term)
                                   && (c.Content.Contains("Umbraco") || c.Summary.Contains("event")).Boost(10)
                                 ).ToList();
 ```
+
+##Wildcard Searches
+Wildcard searches are easy to do.  Just specify the * in the text you are querying.
+
+For example:
+```C#
+@using Umbraco.Examine.Linq
+@using Umbraco.Examine.Linq.Extensions
+
+var index = new Index<Result>();
+IEnumberable<Result> results = index.Where(c => c.Name.Contains("umbr*") && c.NodeTypeAlias == "textpage").ToList();
+```
+
+##New in 1.0.4
+- Ability to query on DateTimes, ints and doubles.
