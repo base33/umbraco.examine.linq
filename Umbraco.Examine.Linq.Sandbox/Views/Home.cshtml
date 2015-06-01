@@ -9,9 +9,9 @@
     sw.Start();
     var mm = new Umbraco.Examine.Linq.Index<Umbraco.Examine.Linq.Models.Result>();
     //var results = mm.Where(c => c.Name == "u*").ToList();
-
+    var date = DateTime.Parse("2015-05-31T02:00:12.0000000");
     var results = (from r in mm
-                   where r.Name.Contains("u*")
+                   where (r.CreatedDate < date || r.CreatedDate > date)
                    select r).ToList();
     sw.Stop();
     
@@ -21,7 +21,7 @@
 <ul>
     @foreach(var result in results)
     {
-        <li>@result.Id @result.Name - @result.NodeTypeAlias</li>
+        <li>@result.Id @result.Name - @result.NodeTypeAlias - @result.CreatedDate.ToString("o")</li>
     }
 </ul>
 @CurrentPage.GetGridHtml("content", "fanoe")

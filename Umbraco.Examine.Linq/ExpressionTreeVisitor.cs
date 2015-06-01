@@ -45,10 +45,13 @@ namespace Umbraco.Examine.Linq
             switch (expression.NodeType)
             {
                 case ExpressionType.Equal:
+                    currentPart.Append("eq");
+                    break;
                 case ExpressionType.NotEqual:
                     //if(!inverseMode)
                     //    localInverseActive = true;
                     //inverseMode = !inverseMode;
+                    currentPart.Append("ne");
                     break;
 
                 case ExpressionType.GreaterThan:
@@ -147,20 +150,52 @@ namespace Umbraco.Examine.Linq
                 value = string.Join(" ", (IEnumerable<string>)expression.Value);
             else if (expression.Value is DateTime)
             {
-                var formattedDateTime = ((DateTime)expression.Value).ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture);//((DateTime)expression.Value).ToString("o");
+                var formattedDateTime = ((DateTime)expression.Value).ToString("yyyyMMddHHmmssfff", CultureInfo.InvariantCulture);//((DateTime)expression.Value).ToString("o");
                 string operation = currentPart.ToString().Substring(currentPart.Length - 2);
-                if(!handleRangeOperation(formattedDateTime, operation, ref value))
+                if (operation == "eq")
                 {
                     value = formattedDateTime;
                 }
+                else if (operation == "ne")
+                {
+                    string fieldName = currentPart.ToString().Substring(0, currentPart.Length - 2);
+                    //we will do a < and then >
+                    operation = "gt";
+                    handleRangeOperation(formattedDateTime, "\\-99999999999999999", "99999999999999999", operation, ref value);
+
+                    //we want to now create the greater than expression
+                    value += " OR " + fieldName;
+                    operation = "lt";
+                    handleRangeOperation(formattedDateTime, "\\-99999999999999999", "99999999999999999", operation, ref value);
+                }
+                else
+                {
+                    handleRangeOperation(formattedDateTime, "\\-99999999999999999", "99999999999999999", operation, ref value);
+                }
             }
-            else if(expression.Value is int)
+            else if(expression.Value is int || expression.Value is double)
             {
-                var formattedInt = ((int)expression.Value).ToString();
+                var formattedInt = expression.Value is double ? (Convert.ToInt64((double)expression.Value)).ToString() : ((int)expression.Value).ToString();
                 string operation = currentPart.ToString().Substring(currentPart.Length - 2);
-                if (!handleRangeOperation(formattedInt, operation, ref value))
+                if(operation == "eq")
                 {
                     value = formattedInt;
+                }
+                else if (operation == "ne")
+                {
+                    string fieldName = currentPart.ToString().Substring(0, currentPart.Length - 2);
+                    //we will do a < and then >
+                    operation = "gt";
+                    handleRangeOperation(formattedInt, "\\-99999999999999999", "99999999999999999", operation, ref value);
+
+                    //we want to now create the greater than expression
+                    value += " OR " + fieldName;
+                    operation = "lt";
+                    handleRangeOperation(formattedInt, "\\-99999999999999999", "99999999999999999", operation, ref value);
+                }
+                else
+                {
+                    handleRangeOperation(formattedInt, "\\-99999999999999999", "99999999999999999", operation, ref value);
                 }
             }
             else if (expression.Value is bool || expression.Value is Boolean)
@@ -168,6 +203,7 @@ namespace Umbraco.Examine.Linq
             else
                 value = expression.Value.ToString();
 
+            currentPart.Length = currentPart.Length - 2; //clear the last 2 characters
             currentPart.Append(value);
 
             return expression;
@@ -249,25 +285,23 @@ namespace Umbraco.Examine.Linq
             return expression;
         }
 
-        protected bool handleRangeOperation(string formattedValue, string operation, ref string value)
+        protected bool handleRangeOperation(string formattedValue, string defaultMinValue, string defaultMaxValue, string operation, ref string value)
         {
             switch (operation)
             {
-                case "lt":
-                    value = string.Format("* TO {0}]", formattedValue);
-                    currentPart.Length = currentPart.Length - 2; //clear the last 2 characters
-                    break;
-                case "gt":
-                    value = string.Format("[{0} TO *]", formattedValue);
-                    currentPart.Length = currentPart.Length - 2; //clear the last 2 characters
-                    break;
                 case "le":
-                    value = string.Format("[* TO {0}]", formattedValue);
-                    currentPart.Length = currentPart.Length - 2; //clear the last 2 characters
+                    value += string.Format("[{0} TO {1}]", defaultMinValue, formattedValue);
+                    break;
+                case "lt":
+                    formattedValue = (Int64.Parse(formattedValue) - 1).ToString();//-1 on the formattedValue to do less than
+                    value += string.Format("[{0} TO {1}]", defaultMinValue, formattedValue);
                     break;
                 case "ge":
-                    value = string.Format("[{0} TO *]", formattedValue);
-                    currentPart.Length = currentPart.Length - 2; //clear the last 2 characters
+                    value += string.Format("[{0} TO {1}]", formattedValue, defaultMaxValue);
+                    break;
+                case "gt":
+                    formattedValue = (Int64.Parse(formattedValue) + 1).ToString();//-1 on the formattedValue to do less than
+                    value += string.Format("[{0} TO {1}]", formattedValue, defaultMaxValue);
                     break;
                 default: //is equals
                     return false;

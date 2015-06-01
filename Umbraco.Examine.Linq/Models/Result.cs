@@ -18,6 +18,8 @@ namespace Umbraco.Examine.Linq.Models
         public string NodeTypeAlias { get; set; }
         [Field("createDate")]
         public DateTime CreatedDate { get; set; }
+        [Field("createDate")]
+        public double DateAsInt { get; set; }
 
         public SearchResult SearchResult { get; set; }
     }
