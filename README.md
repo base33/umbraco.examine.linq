@@ -20,7 +20,23 @@ IEnumberable<Result> results = (from r in index
                 where r.Name.Contains("umbraco") && r.NodeTypeAlias == "textpage"
                 select r).ToList();
 ```
-Above, we are creating a new index, setting the type we wish to query.  See Index cunstructor section for more information on how you can change the target of your search.  By default, the "ExternalSearcher" is used.  Anyway, then we perform the search using Where, and ToList() at the end that executes the query.
+Above, we are creating a new index, setting the type we wish to query.  See Index constructor section for more information on how you can change the target of your search.  By default, the "ExternalSearcher" is used.  Anyway, then we perform the search using Where, and ToList() at the end that executes the query.
+
+##Installation
+
+Install via Nuget using the command below.  Then add the config manually in step 2.
+
+#####Step 1:
+
+PM> Install-Package LINQToExamine
+
+#####Step 2 (I will automate this as part of step 1 asap):
+
+Instert in > Configuration > Compilation > Assemblies
+
+<add assembly="System.Runtime, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+
+<add assembly="System.Linq.Expressions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
 
 ##Index Constructor - changing the default 
 
