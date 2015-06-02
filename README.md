@@ -34,12 +34,13 @@ PM> Install-Package LINQToExamine
 
 Instert in > Configuration > Compilation > Assemblies
 
+```XML
 <add assembly="System.Runtime, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
 
 <add assembly="System.Linq.Expressions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+```
 
 ##Index Constructor - changing the default 
-
 
 Constructor  | Description
 --------------|--------------
