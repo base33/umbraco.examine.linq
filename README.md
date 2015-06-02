@@ -90,6 +90,7 @@ Extension method / operator  | Description | Example
 Contains(term)  | Whether the field contains the value | r => r.Name.Contains("foo")
 Contains(term, fuzzy)  | Whether the field contains the value with Fuzzy enabled | r => r.Name.Contains("foo", 0.8)
 ContainsAny(term)  | Whether the field contains any of the values | r => r.Name.ContainsAny("foo", "bar", "etc")
+ContainsAll(term)  | Whether the field contains all of the values | r => r.Name.ContainsAll("foo", "bar", "etc")
 All these support NOT (!)
 
 ####bool logic:
