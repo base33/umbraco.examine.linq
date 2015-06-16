@@ -14,6 +14,8 @@ namespace Umbraco.Examine.Linq
 
         public override void VisitWhereClause(Remotion.Linq.Clauses.WhereClause whereClause, QueryModel queryModel, int index)
         {
+            if (query.Length > 0)
+                query.Append(" AND ");
             ExpressionTreeVisitor visitor = new ExpressionTreeVisitor(query);
             visitor.VisitExpression(whereClause.Predicate);
 
@@ -27,7 +29,7 @@ namespace Umbraco.Examine.Linq
             NodeTypeAliasAttribute attribute = (NodeTypeAliasAttribute)fromClause.ItemType.GetCustomAttributes(typeof(NodeTypeAliasAttribute), false).FirstOrDefault();
 
             if (attribute != null)
-                query.AppendFormat("nodeTypeAlias:{0} AND ",  attribute.Name);
+                query.AppendFormat("nodeTypeAlias:{0}",  attribute.Name);
 
             base.VisitMainFromClause(fromClause, queryModel);
         }

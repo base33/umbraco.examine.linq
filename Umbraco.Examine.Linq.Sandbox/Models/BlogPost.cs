@@ -9,10 +9,12 @@ namespace Umbraco.Examine.Linq.Sandbox.Models
     [NodeTypeAlias("BlogPost")]
     public class BlogPost
     {
+        [Field("id")]
+        public int Id { get; set; }
         [Field("nodeName")]
         public string Name { get; set; }
         [Field("createDate")]
-        public string CreateDate { get; set; }
+        public DateTime CreatedDate { get; set; }
         [Field("content")]
         public string Content { get; set; }
     }

@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>LINQToExamine</id>
-    <version>1.0.4</version>
+    <version>1.0.5</version>
     <authors>Craig Noble</authors>
     <description>This project allows you to query the Lucene indexes using LINQ based on your own classes.</description>
     <language>en-US</language>
