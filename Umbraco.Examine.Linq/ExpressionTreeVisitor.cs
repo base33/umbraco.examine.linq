@@ -279,6 +279,12 @@ namespace Umbraco.Examine.Linq
                     fuzzy = 0;
                     bracketsEnabled = true;
                     break;
+				case "Equals":
+					bracketsEnabled = false;
+					VisitExpression(expression.Object);
+					VisitExpression(expression.Arguments[0]);
+					bracketsEnabled = true;
+					break;
             }
 
             query.Append(currentPart);
