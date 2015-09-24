@@ -137,6 +137,7 @@ namespace Umbraco.Examine.Linq
         protected override Expression VisitConstantExpression(ConstantExpression expression)
         {
             string value = "";
+			string operation = "";
 
             if(expression.Value is string)
             {
@@ -151,7 +152,7 @@ namespace Umbraco.Examine.Linq
             else if (expression.Value is DateTime)
             {
                 var formattedDateTime = ((DateTime)expression.Value).ToString("yyyyMMddHHmmssfff", CultureInfo.InvariantCulture);//((DateTime)expression.Value).ToString("o");
-                string operation = currentPart.ToString().Substring(currentPart.Length - 2);
+                operation = currentPart.ToString().Substring(currentPart.Length - 2);
                 if (operation == "eq")
                 {
                     value = formattedDateTime;
@@ -176,7 +177,7 @@ namespace Umbraco.Examine.Linq
             else if(expression.Value is int || expression.Value is double)
             {
                 var formattedInt = expression.Value is double ? (Convert.ToInt64((double)expression.Value)).ToString() : ((int)expression.Value).ToString();
-                string operation = currentPart.ToString().Substring(currentPart.Length - 2);
+                operation = currentPart.ToString().Substring(currentPart.Length - 2);
                 if(operation == "eq")
                 {
                     value = formattedInt;
@@ -203,7 +204,9 @@ namespace Umbraco.Examine.Linq
             else
                 value = expression.Value.ToString();
 
-            currentPart.Length = currentPart.Length - 2; //clear the last 2 characters
+			if (!string.IsNullOrEmpty(operation))
+				currentPart.Length = currentPart.Length - 2; //clear the last 2 characters
+
             currentPart.Append(value);
 
             return expression;
@@ -276,6 +279,12 @@ namespace Umbraco.Examine.Linq
                     fuzzy = 0;
                     bracketsEnabled = true;
                     break;
+				case "Equals":
+					bracketsEnabled = false;
+					VisitExpression(expression.Object);
+					VisitExpression(expression.Arguments[0]);
+					bracketsEnabled = true;
+					break;
             }
 
             query.Append(currentPart);
