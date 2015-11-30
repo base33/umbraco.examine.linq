@@ -1,5 +1,6 @@
 ﻿@using System.Linq;
 @using Umbraco.Examine.Linq.Extensions;
+@using Umbraco.Examine.Linq.Sandbox.Models;
 
 @inherits Umbraco.Web.Mvc.UmbracoTemplatePage
               
@@ -7,7 +8,8 @@
     Layout = "Master.cshtml";
     System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
     sw.Start();
-    var results = new Umbraco.Examine.Linq.Index<Umbraco.Examine.Linq.Sandbox.Models.BlogPost>().ToList();
+    var results = new Umbraco.Examine.Linq.Index<BlogPost>().Where(c => c.Name.Contains("different", 0.6) || c.Name.Contains("only").Boost(8))
+        .Where(c => c.CreatedDate < DateTime.Now && c.CreatedDate > DateTime.Now.AddMonths(-6)).ToList();
     //var results = mm.Where(c => c.Name == "u*").ToList();
     //var date = DateTime.Parse("2015-05-31T02:00:12.0000000");
     
