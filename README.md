@@ -164,3 +164,8 @@ IEnumberable<Result> results = index.Where(c => c.Name.Contains("umbr*") && c.No
 
 ##New in 1.0.4
 - Ability to query on DateTimes, ints and doubles.
+
+##New in 1.1
+- Support for multiple where clauses
+- Support for Skip
+- Support for Take
