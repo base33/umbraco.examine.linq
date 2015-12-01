@@ -1,4 +1,6 @@
-## What is Umbraco.Examine.Linq?
+umbraco.examine.linq has been released as Linq To Examine
+
+## What is Linq To Examine?
 This project allows you to query the Lucene indexes using LINQ based on your own classes.  This project comes with a basic Result class which allows you to use this straight out of the box.
 
 ###Code example
