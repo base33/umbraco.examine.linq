@@ -1,4 +1,6 @@
-## What is Umbraco.Examine.Linq?
+umbraco.examine.linq has been released as Linq To Examine
+
+## What is Linq To Examine?
 This project allows you to query the Lucene indexes using LINQ based on your own classes.  This project comes with a basic Result class which allows you to use this straight out of the box.
 
 ###Code example
@@ -21,6 +23,22 @@ IEnumberable<Result> results = (from r in index
                 select r).ToList();
 ```
 Above, we are creating a new index, setting the type we wish to query.  See Index constructor section for more information on how you can change the target of your search.  By default, the "ExternalSearcher" is used.  Anyway, then we perform the search using Where, and ToList() at the end that executes the query.
+
+You can also perform multiple where clauses, skip and take as of v1.1
+```C#
+@using Umbraco.Examine.Linq
+@using Umbraco.Examine.Linq.Extensions
+
+IEnumberable<Result> results = new Index<BlogPost>()
+ .Where(r.Name.Contains(searchTerm));
+
+if(maxDate != DateTime.MinValue)
+{
+    results = results.Where(r => r.CreatedDate < maxDate);
+}
+
+results = results.Skip(startIndex).Take(amount).ToList();
+```
 
 ##Installation
 
@@ -164,3 +182,8 @@ IEnumberable<Result> results = index.Where(c => c.Name.Contains("umbr*") && c.No
 
 ##New in 1.0.4
 - Ability to query on DateTimes, ints and doubles.
+
+##New in 1.1
+- Support for multiple where clauses
+- Support for Skip
+- Support for Take
