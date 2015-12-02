@@ -10,7 +10,7 @@ using Umbraco.Examine.Linq.Attributes;
 
 namespace Umbraco.Examine.Linq.Mapper
 {
-    public class SearchResultMapper<T>
+    public class SearchResultMapper<T> : IMapper<T>
     {
         public IEnumerable<T> Map(IEnumerable<SearchResult> results)
         {

@@ -192,6 +192,7 @@
     <Compile Include="ExpressionTreeVisitor.cs" />
     <Compile Include="Extensions\ClassTypes.cs" />
     <Compile Include="Extensions\Primitive.cs" />
+    <Compile Include="IMapper.cs" />
     <Compile Include="Index.cs" />
     <Compile Include="ISearcher.cs" />
     <Compile Include="Mapper\MapperConfiguration.cs" />

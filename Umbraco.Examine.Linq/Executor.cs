@@ -10,13 +10,15 @@ using Umbraco.Examine.Linq.Mapper;
 
 namespace Umbraco.Examine.Linq
 {
-    public class Executor : IQueryExecutor
+    public class Executor<T> : IQueryExecutor
     {
         protected ISearcher Searcher { get; set; }
+        protected IMapper<T> Mapper { get; set; }
 
-        public Executor(ISearcher searcher)
+        public Executor(ISearcher searcher, IMapper<T> mapper)
         {
             Searcher = searcher;
+            Mapper = mapper ?? new SearchResultMapper<T>();
         }
 
         // Executes a query with a scalar result, i.e. a query that ends with a result operator such as Count, Sum, or Average.
@@ -34,7 +36,7 @@ namespace Umbraco.Examine.Linq
                 searchResults = searchResults.Take(visitor.take);
             }
 
-            return new SearchResultMapper<T>().Map(searchResults);
+            return (IEnumerable<T>)Mapper.Map(searchResults);
         }
 
         // Executes a query with a single result object, i.e. a query that ends with a result operator such as First, Last, Single, Min, or Max.

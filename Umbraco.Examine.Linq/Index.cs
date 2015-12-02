@@ -13,14 +13,20 @@ namespace Umbraco.Examine.Linq
 {
     public class Index<T> : QueryableBase<T>
     {
-        public Index(string indexName = "ExternalSearcher")
-            : base(new DefaultQueryProvider(typeof(Index<>), QueryParser.CreateDefault(), new Executor(new UmbracoSearch(indexName))))
+        public Index(IMapper<T> mapper)
+            : base(new DefaultQueryProvider(typeof(Index<>), QueryParser.CreateDefault(), new Executor<T>(new UmbracoSearch("ExternalSearcher"), mapper)))
         {
 
         }
 
-        public Index(ISearcher searcher)
-            : base(new DefaultQueryProvider(typeof(Index<>), QueryParser.CreateDefault(), new Executor(searcher)))
+        public Index(string indexName = "ExternalSearcher", IMapper<T> mapper = null)
+            : base(new DefaultQueryProvider(typeof(Index<>), QueryParser.CreateDefault(), new Executor<T>(new UmbracoSearch(indexName), mapper)))
+        {
+
+        }
+
+        public Index(ISearcher searcher, IMapper<T> mapper = null)
+            : base(new DefaultQueryProvider(typeof(Index<>), QueryParser.CreateDefault(), new Executor<T>(searcher, mapper)))
         {
 
         }
