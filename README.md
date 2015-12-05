@@ -147,6 +147,17 @@ operator  | Description | Example
 
 **More logic extension methods on the way, to help with ranges.**
 
+##Fuzzy
+Fuzzy allows you to match words in searches that could be "similar" to your search term but may not match your search term exactly.  For example, you may be accepting a search term from the user but they may have slightly mispelt the word.  Using fuzzy you can help them along their way by doing a fuzzy search that may return results that they user was searching for. 
+
+Example: A user types in "umpraco" instead of "umbraco", we will do a search that will match "umbraco" and will return results that contain "umbraco" in the name
+```C#
+string term = GetTerm(); //get the search term - your implementation
+var index = new Index<BlogPost>();
+IEnumerable<BlogPost> results = index.Where(c => c.Name.Contains("umpraco").Fuzzy(0.7)).ToList();
+```
+
+
 ##Boosting
 Boosting allows you to boosts results that meet a specific condition.  For example, you may want to boost the score for results where the content contains the word "Umbraco".  Alternatively, you may want to boost results where the content contains the word "Umbraco" or summary contains "Events".  Lets look at implementing both:
 
