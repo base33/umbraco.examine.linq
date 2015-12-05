@@ -59,6 +59,14 @@
     <Reference Include="cms">
       <HintPath>..\packages\UmbracoCms.Core.7.2.5\lib\cms.dll</HintPath>
     </Reference>
+    <Reference Include="ConcreteContentTypes.Core, Version=0.1.0.14, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ConcreteContentTypes.Core.0.1.0-beta-000014\lib\net45\ConcreteContentTypes.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="ConcreteContentTypes.LinqToExamine, Version=0.1.0.5, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ConcreteContentTypes.Addon.LinqToExamine.0.1.0-beta-000005\lib\net45\ConcreteContentTypes.LinqToExamine.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="controls">
       <HintPath>..\packages\UmbracoCms.Core.7.2.5\lib\controls.dll</HintPath>
     </Reference>
@@ -244,6 +252,7 @@
     <Content Include="Views\Partials\BottomNavigation.cshtml" />
     <Content Include="Views\Partials\MainNavigation.cshtml" />
     <Content Include="Views\TextPage.cshtml" />
+    <Content Include="Config\ConcreteContentTypes.config" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -257,9 +266,21 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Mapper\Mapper.cs" />
-    <Compile Include="Models\BlogPost.cs" />
+    <Compile Include="Mapper\ConcreteMapper.cs" />
+    <Compile Include="Models\Content\Author.cs" />
+    <Compile Include="Models\Content\Authors.cs" />
+    <Compile Include="Models\Content\BlogPost.cs" />
+    <Compile Include="Models\Content\BlogPostRepository.cs" />
+    <Compile Include="Models\Content\Home.cs" />
+    <Compile Include="Models\Content\LandingPage.cs" />
+    <Compile Include="Models\Content\TextPage.cs" />
+    <Compile Include="Models\Content\UmbracoContent.cs" />
+    <Compile Include="Models\Media\File.cs" />
+    <Compile Include="Models\Media\Folder.cs" />
+    <Compile Include="Models\Media\Image.cs" />
+    <Compile Include="Models\Media\UmbracoMedia.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repositories\BlogRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Umbraco.Examine.Linq\Umbraco.Examine.Linq.csproj">

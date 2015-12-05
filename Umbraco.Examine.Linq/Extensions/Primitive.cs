@@ -31,22 +31,12 @@ namespace Umbraco.Examine.Linq.Extensions
         }
 
         /// <summary>
-        /// Fuzzy searches based on the Levenshtein Distance.  So - similarly spelt words.
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public static bool Fuzzy(this bool value)
-        {
-            return value;
-        }
-
-        /// <summary>
         /// Whether the field contains the text
         /// </summary>
         /// <param name="value"></param>
         /// <param name="values"></param>
         /// <returns></returns>
-        public static bool Contains(this string value, string test, double fuzzy)
+        public static bool Contains(this string value, string test)
         {
             return value.Contains(value);
         }
@@ -80,6 +70,16 @@ namespace Umbraco.Examine.Linq.Extensions
             foreach(string item in values)
             {
                 if (valueLower.IndexOf(item) >= 0)
+                    return true;
+            }
+            return false;
+        }
+
+        public static bool IsAny(this int value, params int[] values)
+        {
+            foreach(int val in values)
+            {
+                if (value == val)
                     return true;
             }
             return false;

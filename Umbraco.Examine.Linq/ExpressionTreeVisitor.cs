@@ -1,8 +1,10 @@
-﻿using System;
+﻿using Remotion.Linq.Clauses.Expressions;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Umbraco.Examine.Linq.Attributes;
@@ -36,8 +38,8 @@ namespace Umbraco.Examine.Linq
         {
             this.currentParts.Push(new StringBuilder());
 
-            addStartBracket();
-            
+            query.Append("(");
+
             VisitExpression(expression.Left);
 
             //bool localInverseActive = false;
@@ -48,10 +50,7 @@ namespace Umbraco.Examine.Linq
                     currentPart.Append("eq");
                     break;
                 case ExpressionType.NotEqual:
-                    //if(!inverseMode)
-                    //    localInverseActive = true;
-                    //inverseMode = !inverseMode;
-                    currentPart.Append("ne");
+                    inverseMode = true;
                     break;
 
                 case ExpressionType.GreaterThan:
@@ -84,9 +83,9 @@ namespace Umbraco.Examine.Linq
                     query.Append("");
                     break;
             }
-
+            bracketsEnabled = true;
             VisitExpression(expression.Right);
-
+            inverseMode = false;
             //specific case where exact matches are required, we will insert the + or - at the start and a proximity of 0
             //may need to relocate this logic
             if(expression.Left is MemberExpression && expression.Right is ConstantExpression && ((ConstantExpression)expression.Right).Value is string)
@@ -104,7 +103,7 @@ namespace Umbraco.Examine.Linq
             //    inverseMode = !inverseMode;
 
             query.Append(currentPart);
-            addEndBracket();
+            query.Append(")");
             currentParts.Pop();
 
             return expression;
@@ -113,18 +112,16 @@ namespace Umbraco.Examine.Linq
         protected override Expression VisitUnaryExpression(UnaryExpression expression)
         {
             if (expression.NodeType == ExpressionType.Not)
-                inverseMode = true;
+                query.Append(" NOT ");
 
             VisitExpression(expression.Operand);
-
-            inverseMode = false;
 
             return expression;
         } 
 
         protected override Expression VisitMemberExpression(MemberExpression expression)
         {
-            FieldAttribute attribute = (FieldAttribute)expression.Member.GetCustomAttributes(typeof(FieldAttribute), true).FirstOrDefault();
+            FieldAttribute attribute = GetReferenceSourceAttributeOrSelf((expression));
 
             if (attribute != null)
                 currentPart.AppendFormat("{0}:", attribute.Name);
@@ -132,6 +129,23 @@ namespace Umbraco.Examine.Linq
                 currentPart.AppendFormat("{0}:", expression.Member.Name);
 
             return expression;
+        }
+
+        protected FieldAttribute GetReferenceSourceAttributeOrSelf(MemberExpression memberExp)
+        {
+            //if(memberInfo is GetReferenceSourceAttributeOrSelf)
+            if (!(memberExp.Expression is QuerySourceReferenceExpression))
+            {
+                MemberInfo memberIno = null;
+                MemberExpression exp = memberExp;
+                do
+                {
+                    exp = (MemberExpression)exp.Expression;
+                } while (!(exp.Expression is QuerySourceReferenceExpression));
+                return (FieldAttribute)exp.Member.GetCustomAttributes(typeof(FieldAttribute), true).FirstOrDefault();
+            }
+
+            return (FieldAttribute)memberExp.Member.GetCustomAttributes(typeof(FieldAttribute), true).FirstOrDefault();
         }
 
         protected override Expression VisitConstantExpression(ConstantExpression expression)
@@ -220,17 +234,18 @@ namespace Umbraco.Examine.Linq
             switch(expression.Method.Name)
             {
                 case "Contains":
+                    bracketsEnabled = false;
                     currentPart.Append(inverseMode ? "-" : "+");
                     VisitExpression(expression.Object);
                     if(expression.Arguments.Count == 3)
                     {
                         VisitExpression(expression.Arguments[1]);
-                        double bb = (double)((ConstantExpression)expression.Arguments[2]).Value;
-                        currentPart.Append("~" + bb.ToString());
+                        currentPart.Append("~" + fuzzy.ToString());
                     }
                     else
                         VisitExpression(expression.Arguments[0]);
                     currentPart.Append(getFuzzyString());
+                    bracketsEnabled = true;
                     break;
                 case "ContainsAny":
                     //in this instance, the first argument is an expression to the value, 
@@ -243,7 +258,7 @@ namespace Umbraco.Examine.Linq
                             currentPart.Append("-");
                         VisitExpression(expression.Arguments[0]);
                         VisitExpression(expression.Object);
-                        currentPart.Append(optionalValuesToTest[i]); //string array
+                        currentPart.Append(optionalValuesToTest[i] + (fuzzy > 0 ? "~" + fuzzy.ToString() : "")); //string array
                         if (i < optionalValuesToTest.Length - 1)
                             currentPart.Append(" "); //maybe use " OR "
                     }
@@ -259,16 +274,36 @@ namespace Umbraco.Examine.Linq
                         currentPart.Append(inverseMode ? "-" : "+");
                         VisitExpression(expression.Arguments[0]);
                         VisitExpression(expression.Object);
-                        currentPart.Append(requiredValuesToTest[i]); //string array
+                        currentPart.Append(requiredValuesToTest[i] + (fuzzy > 0 ? "~" + fuzzy.ToString() : "")); //string array
                         if (i < requiredValuesToTest.Length - 1)
                             currentPart.Append(" "); //maybe use " OR "
                     }
                     bracketsEnabled = true;
                     break;
+                case "IsAny":
+                    //in this instance, the first argument is an expression to the value, 
+                    //so we will disable brackets and visit the expression
+                    bracketsEnabled = false;
+                    int[] intValuesToTest = (int[])((ConstantExpression)expression.Arguments[1]).Value;
+                    for (var i = 0; i < intValuesToTest.Length; i++)
+                    {
+                        if (inverseMode)
+                            currentPart.Append("-");
+                        VisitExpression(expression.Arguments[0]);
+                        VisitExpression(expression.Object);
+                        currentPart.Append(intValuesToTest[i].ToString()); //string array
+                        if (i < intValuesToTest.Length - 1)
+                            currentPart.Append(" "); //maybe use " OR "
+                    }
+                    bracketsEnabled = true;
+                    break;
                 case "Boost":
+                    bracketsEnabled = false;
                     VisitExpression(expression.Arguments[0]);
                     VisitExpression(expression.Object);
+                    addEndBracket();
                     currentPart.AppendFormat("^{0}", expression.Arguments[1]);
+                    bracketsEnabled = false;
                     break;
                 case "Fuzzy":
                     bracketsEnabled = false;
@@ -277,7 +312,7 @@ namespace Umbraco.Examine.Linq
                         VisitExpression(expression.Arguments[0]);
                     VisitExpression(expression.Object);
                     fuzzy = 0;
-                    bracketsEnabled = true;
+                    bracketsEnabled = false;
                     break;
 				case "Equals":
 					bracketsEnabled = false;

@@ -8,26 +8,6 @@
               
 @{
     Layout = "Master.cshtml";
-
-    System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
-
-    sw.Start();
-
-    var results = new Index<BlogPost>(new Mapper<BlogPost>(Umbraco))
-        .Where(c => c.Name.Contains("different") || c.Name.Contains("only").Boost(8))
-        .Where(c => c.CreatedDate < DateTime.Now && c.CreatedDate > DateTime.Now.AddMonths(-7))
-        .ToList();
-    
-    sw.Stop();
-    
-    
 }
-<h1>Processing time: @sw.ElapsedMilliseconds ms</h1>
-<ul>
-    @foreach(var result in results)
-    {
-        @*<li>@result.Id @result.Name - @result.NodeTypeAlias - @result.CreatedDate.ToString("o")</li>*@
-        <li>@result.Name</li>
-    }
-</ul>
+
 @CurrentPage.GetGridHtml("content", "fanoe")
