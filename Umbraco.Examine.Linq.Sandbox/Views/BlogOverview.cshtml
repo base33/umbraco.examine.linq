@@ -1,5 +1,6 @@
 ﻿@using ConcreteContentTypes.Core.Extensions
-@using UmbracoNS = Umbraco;
+@using UmbracoNS = Umbraco
+@using Umbraco.Examine.Linq.Extensions
 
 @inherits Umbraco.Web.Mvc.UmbracoTemplatePage
 
@@ -7,6 +8,9 @@
     Layout = "Master.cshtml";
 
     var CurrentPage = (Umbraco.Core.Models.IPublishedContent)base.CurrentPage;
+
+    var results = new Umbraco.Examine.Linq.Index<Umbraco.Examine.Linq.Sandbox.Models.Content.BlogPost>(new Umbraco.Examine.Linq.Sandbox.Mapper.ConcreteMapper<Umbraco.Examine.Linq.Sandbox.Models.Content.BlogPost>())
+                    .Where(c => c.CreateDate < DateTime.Now);
 }
 
 <div role="content">
@@ -15,13 +19,14 @@
 		<div class="container">
 
 			<div class="row">
-				@foreach (var post in new UmbracoNS.Examine.Linq.Sandbox.Repositories.BlogRepository().GetAllBlogPosts())
+				@*foreach (var post in new UmbracoNS.Examine.Linq.Sandbox.Repositories.BlogRepository().GetAllBlogPosts())*@
+                @foreach (var post in results)
                 {
 					<div class="col-sm-6">
 						<div class="content equal">
 							<a href="@post.Url">
-								<div class="date">@post.Author.Name @post.CreateDate.ToLongDateString()</div>
-								<h2>@post.Name</h2>		
+								<div class="date">@post.Author.Name @post.CreateDate.ToLongDateString() @post.CreateDate.ToString("HH:mm:ss")</div>
+								<h2>@post.Name @post.Author.Id</h2>		
 								<p>@Umbraco.Truncate(post.Introduction, 240, true)</p>
 							</a>
 						</div>

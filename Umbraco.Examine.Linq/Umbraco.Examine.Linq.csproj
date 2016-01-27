@@ -200,7 +200,8 @@
     <Compile Include="Models\Result.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QueryModelVisitor.cs" />
-    <Compile Include="SearchProviders\UmbracoSearch.cs" />
+    <Compile Include="SearchProviders\ExamineSearch.cs" />
+    <Compile Include="SearchProviders\LuceneSearch.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

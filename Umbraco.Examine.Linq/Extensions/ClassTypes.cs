@@ -8,9 +8,9 @@ namespace Umbraco.Examine.Linq.Extensions
 {
     public static class ClassTypes
     {
-        //public static DateTime Boost(this DateTime value, int boost)
-        //{
-        //    return value;
-        //}
+        public static bool IsWithinRange(this DateTime value, DateTime from, DateTime to)
+        {
+            return value > from && value < to;
+        }
     }
 }

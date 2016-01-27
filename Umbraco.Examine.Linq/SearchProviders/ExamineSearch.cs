@@ -10,18 +10,18 @@ using System.Threading.Tasks;
 
 namespace Umbraco.Examine.Linq.SearchProviders
 {
-    public class UmbracoSearch : ISearcher
+    public class ExamineSearch : ISearcher
     {
         protected string IndexName { get; set; }
 
         public static Dictionary<string, ISearchCriteria> searchQueryCache { get; set; }
 
-        static UmbracoSearch()
+        static ExamineSearch()
         {
             searchQueryCache = new Dictionary<string, ISearchCriteria>();
         }
 
-        public UmbracoSearch(string indexName)
+        public ExamineSearch(string indexName)
         {
             IndexName = indexName;
         }

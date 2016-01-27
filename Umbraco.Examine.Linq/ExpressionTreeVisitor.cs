@@ -50,6 +50,7 @@ namespace Umbraco.Examine.Linq
                     currentPart.Append("eq");
                     break;
                 case ExpressionType.NotEqual:
+                    currentPart.Append("ne");
                     inverseMode = true;
                     break;
 
@@ -156,8 +157,16 @@ namespace Umbraco.Examine.Linq
             if(expression.Value is string)
             {
                 value = expression.Value.ToString();
-                if (value.Contains(' '))
-                    value = string.Format("\"{0}\"", value);
+                operation = currentPart.ToString().Substring(currentPart.Length - 2);
+                if (operation == "eq" || operation == "ne")
+                {
+                    if (value.Contains(' '))
+                        value = string.Format("\"{0}\"", value);
+                }
+                else
+                {
+                    operation = "";
+                }
             }
             else if (expression.Value is string[])
                 value = string.Join(" ", (string[])expression.Value);
@@ -165,56 +174,80 @@ namespace Umbraco.Examine.Linq
                 value = string.Join(" ", (IEnumerable<string>)expression.Value);
             else if (expression.Value is DateTime)
             {
-                var formattedDateTime = ((DateTime)expression.Value).ToString("yyyyMMddHHmmssfff", CultureInfo.InvariantCulture);//((DateTime)expression.Value).ToString("o");
+                string fieldName = currentPart.ToString().Substring(0, currentPart.Length - 3); //-3 to remove colon
+                
+                string minRange = shouldFormatLegacyDate(fieldName) || true ? "00000000000000000" : formatDateTime(fieldName, DateTime.MinValue);
+                string maxRange = shouldFormatLegacyDate(fieldName) || true ? "99999999999999999" : formatDateTime(fieldName, DateTime.MaxValue);
+
                 operation = currentPart.ToString().Substring(currentPart.Length - 2);
+
                 if (operation == "eq")
                 {
-                    value = formattedDateTime;
+                    var formattedDateTime = formatDateTime(fieldName, (DateTime)expression.Value);
+                    value = $"\"{formattedDateTime}\"";
                 }
                 else if (operation == "ne")
                 {
-                    string fieldName = currentPart.ToString().Substring(0, currentPart.Length - 2);
+                    var formattedDateTime = formatDateTime("createDate", (DateTime)expression.Value, true);
                     //we will do a < and then >
                     operation = "gt";
-                    handleRangeOperation(formattedDateTime, "\\-99999999999999999", "99999999999999999", operation, ref value);
+                    handleRangeOperation(formattedDateTime, minRange, maxRange, operation, ref value);
 
                     //we want to now create the greater than expression
                     value += " OR " + fieldName;
                     operation = "lt";
-                    handleRangeOperation(formattedDateTime, "\\-99999999999999999", "99999999999999999", operation, ref value);
+                    formattedDateTime = formatDateTime(fieldName, (DateTime)expression.Value);
+                    handleRangeOperation(formattedDateTime, minRange, maxRange, operation, ref value);
                 }
                 else
                 {
-                    handleRangeOperation(formattedDateTime, "\\-99999999999999999", "99999999999999999", operation, ref value);
+                    var formattedDateTime = formatDateTime(fieldName, (DateTime)expression.Value);
+                    if (operation == "gt")
+                    {
+                        formattedDateTime = formatDateTime(fieldName, (DateTime)expression.Value, true);
+                        handleRangeOperation(formattedDateTime, minRange, maxRange, operation, ref value);
+                    }
+                    else
+                        handleRangeOperation(formattedDateTime, minRange, maxRange, operation, ref value);
                 }
             }
             else if(expression.Value is int || expression.Value is double)
             {
-                var formattedInt = expression.Value is double ? (Convert.ToInt64((double)expression.Value)).ToString() : ((int)expression.Value).ToString();
                 operation = currentPart.ToString().Substring(currentPart.Length - 2);
                 if(operation == "eq")
                 {
+                    var formattedInt = expression.Value is double ? (Convert.ToInt64((double)expression.Value)).ToString() : ((int)expression.Value).ToString();
                     value = formattedInt;
                 }
                 else if (operation == "ne")
                 {
+                    var formattedGt = expression.Value is double ? (Convert.ToInt64((double)expression.Value - 1)).ToString() : ((int)expression.Value - 1).ToString();
+                    var formattedLt = expression.Value is double ? (Convert.ToInt64((double)expression.Value + 1)).ToString() : ((int)expression.Value + 1).ToString();
                     string fieldName = currentPart.ToString().Substring(0, currentPart.Length - 2);
                     //we will do a < and then >
                     operation = "gt";
-                    handleRangeOperation(formattedInt, "\\-99999999999999999", "99999999999999999", operation, ref value);
+                    handleRangeOperation(formattedGt, "\\-99999999999999999", "99999999999999999", operation, ref value);
 
                     //we want to now create the greater than expression
                     value += " OR " + fieldName;
                     operation = "lt";
-                    handleRangeOperation(formattedInt, "\\-99999999999999999", "99999999999999999", operation, ref value);
+                    handleRangeOperation(formattedLt, "\\-99999999999999999", "99999999999999999", operation, ref value);
                 }
                 else
                 {
+                    string formattedInt = "";
+                    if(operation == "gt")
+                        formattedInt = expression.Value is double ? (Convert.ToInt64((double)expression.Value - 1)).ToString() : ((int)expression.Value - 1).ToString();
+                    else if(operation == "lt")
+                        formattedInt = expression.Value is double ? (Convert.ToInt64((double)expression.Value + 1)).ToString() : ((int)expression.Value + 1).ToString();
                     handleRangeOperation(formattedInt, "\\-99999999999999999", "99999999999999999", operation, ref value);
                 }
             }
             else if (expression.Value is bool || expression.Value is Boolean)
-                value = ((bool)expression.Value) ? "1" : "0";
+            {
+                operation = currentPart.ToString().Substring(currentPart.Length - 2);
+                value = ((bool)expression.Value) && !inverseMode ? "1" : "0";
+            }
             else
                 value = expression.Value.ToString();
 
@@ -235,7 +268,7 @@ namespace Umbraco.Examine.Linq
             {
                 case "Contains":
                     bracketsEnabled = false;
-                    currentPart.Append(inverseMode ? "-" : "+");
+                    currentPart.Append(inverseMode ? "-" : "");
                     VisitExpression(expression.Object);
                     if(expression.Arguments.Count == 3)
                     {
@@ -297,22 +330,24 @@ namespace Umbraco.Examine.Linq
                     }
                     bracketsEnabled = true;
                     break;
-                case "Boost":
+                case "IsWithinRange":
+                    //in this instance, the first argument is an expression to the value, 
+                    //so we will disable brackets and visit the expression
                     bracketsEnabled = false;
+                    DateTime fromDate = (DateTime)((ConstantExpression)expression.Arguments[1]).Value;
+                    DateTime toDate = (DateTime)((ConstantExpression)expression.Arguments[2]).Value;
                     VisitExpression(expression.Arguments[0]);
-                    VisitExpression(expression.Object);
-                    addEndBracket();
-                    currentPart.AppendFormat("^{0}", expression.Arguments[1]);
-                    bracketsEnabled = false;
+                    var fieldName = currentPart.ToString().Split(':')[0];
+                    //below we offset the date by a minute to be inclusive of the dates being filtered.  Lucene doesn't include the min and max in the results
+                    currentPart.AppendFormat("[{0} TO {1}]", formatDateTime("", fromDate.AddMinutes(-1), true), formatDateTime(fieldName, toDate.AddMinutes(1)));
+                    bracketsEnabled = true;
                     break;
-                case "Fuzzy":
+                case "StartsWith":
                     bracketsEnabled = false;
-                    fuzzy = (double)((ConstantExpression)expression.Arguments[1]).Value;
-                    if(expression.Arguments.Any())
-                        VisitExpression(expression.Arguments[0]);
                     VisitExpression(expression.Object);
-                    fuzzy = 0;
-                    bracketsEnabled = false;
+                    currentPart.Append("^");
+                    VisitExpression(expression.Arguments[0]);
+                    bracketsEnabled = true;
                     break;
 				case "Equals":
 					bracketsEnabled = false;
@@ -320,6 +355,23 @@ namespace Umbraco.Examine.Linq
 					VisitExpression(expression.Arguments[0]);
 					bracketsEnabled = true;
 					break;
+                case "Boost":
+                    bracketsEnabled = false;
+                    VisitExpression(expression.Arguments[0]);
+                    VisitExpression(expression.Object);
+                    //addEndBracket();
+                    currentPart.AppendFormat("^{0}", expression.Arguments[1]);
+                    bracketsEnabled = false;
+                    break;
+                case "Fuzzy":
+                    bracketsEnabled = false;
+                    fuzzy = (double)((ConstantExpression)expression.Arguments[1]).Value;
+                    if (expression.Arguments.Any())
+                        VisitExpression(expression.Arguments[0]);
+                    VisitExpression(expression.Object);
+                    fuzzy = 0;
+                    bracketsEnabled = false;
+                    break;
             }
 
             query.Append(currentPart);
@@ -327,6 +379,35 @@ namespace Umbraco.Examine.Linq
             currentParts.Pop();
 
             return expression;
+        }
+
+        protected string formatDateTime(string fieldName, DateTime date, bool isFrom = false)
+        {
+
+            return shouldFormatLegacyDate(fieldName)
+                ? toDateLegacy(date)
+                : isFrom ? toDateFromFormat(date) : toDateISO8601(date);
+        }
+
+        protected bool shouldFormatLegacyDate(string fieldName)
+        {
+            var legacyDateTimeFields = new[] { "createDate", "updateDate" };
+            return legacyDateTimeFields.Contains(fieldName);
+        }
+
+        protected string toDateISO8601(DateTime date)
+        {
+            return date.ToString("yyyy-MM-ddTHH:mm:ss");
+        }
+
+        protected string toDateLegacy(DateTime date)
+        {
+            return date.ToString("yyyyMMddHHmmssfff", CultureInfo.InvariantCulture);
+        }
+
+        protected string toDateFromFormat(DateTime date)
+        {
+            return date.ToString("yyyy-MM-ddTHHmmssfff");
         }
 
         protected bool handleRangeOperation(string formattedValue, string defaultMinValue, string defaultMaxValue, string operation, ref string value)
@@ -337,14 +418,12 @@ namespace Umbraco.Examine.Linq
                     value += string.Format("[{0} TO {1}]", defaultMinValue, formattedValue);
                     break;
                 case "lt":
-                    formattedValue = (Int64.Parse(formattedValue) - 1).ToString();//-1 on the formattedValue to do less than
                     value += string.Format("[{0} TO {1}]", defaultMinValue, formattedValue);
                     break;
                 case "ge":
                     value += string.Format("[{0} TO {1}]", formattedValue, defaultMaxValue);
                     break;
                 case "gt":
-                    formattedValue = (Int64.Parse(formattedValue) + 1).ToString();//-1 on the formattedValue to do less than
                     value += string.Format("[{0} TO {1}]", formattedValue, defaultMaxValue);
                     break;
                 default: //is equals
