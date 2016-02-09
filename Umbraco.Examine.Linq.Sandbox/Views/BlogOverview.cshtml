@@ -7,17 +7,48 @@
 @{
     Layout = "Master.cshtml";
 
+    var searcher = new Searcher();
+
     var CurrentPage = (Umbraco.Core.Models.IPublishedContent)base.CurrentPage;
 
-    var results = new Umbraco.Examine.Linq.Index<Umbraco.Examine.Linq.Sandbox.Models.Content.BlogPost>(new Umbraco.Examine.Linq.Sandbox.Mapper.ConcreteMapper<Umbraco.Examine.Linq.Sandbox.Models.Content.BlogPost>())
-                    .Where(c => c.CreateDate < DateTime.Now);
+    var results = new Umbraco.Examine.Linq.Index<Umbraco.Examine.Linq.Sandbox.Models.Content.BlogPost>(searcher, new Umbraco.Examine.Linq.Sandbox.Mapper.ConcreteMapper<Umbraco.Examine.Linq.Sandbox.Models.Content.BlogPost>())
+                    .Where(c => c.Name.Contains("tall").Fuzzy(0.5) || c.Name.Contains("f*").Boost(10));
+    results = results.Where(c => c.CreateDate > DateTime.Now.AddYears(-2) && c.CreateDate < DateTime.Now);
+
+    results = results.ToList().AsQueryable();
+
+
+}
+
+@functions {
+    public class Searcher : Umbraco.Examine.Linq.ISearcher
+    {
+        public string Query { get; set; }
+
+        public IEnumerable<Examine.SearchResult> Search(string query)
+        {
+            Query = query;
+            try
+            {
+                return new Umbraco.Examine.Linq.SearchProviders.LuceneSearch("ExternalSearcher").Search(query);
+                }
+            catch (Exception)
+            {
+                Query = "invalid : " + query;
+            }
+
+            return new List<Examine.SearchResult>();
+        }
+    }
 }
 
 <div role="content">
 
 	<section class="light blogarchive equalizer">
 		<div class="container">
-
+            <div class="row">
+                <p>@searcher.Query</p>
+            </div>
 			<div class="row">
 				@*foreach (var post in new UmbracoNS.Examine.Linq.Sandbox.Repositories.BlogRepository().GetAllBlogPosts())*@
                 @foreach (var post in results)

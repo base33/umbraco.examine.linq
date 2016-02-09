@@ -359,7 +359,8 @@ namespace Umbraco.Examine.Linq
                     bracketsEnabled = false;
                     VisitExpression(expression.Arguments[0]);
                     VisitExpression(expression.Object);
-                    //addEndBracket();
+                    if((expression.Arguments[0] is BinaryExpression) && expression.Arguments[0].GetType().FullName != "System.Linq.Expressions.LogicalBinaryExpression")
+                        addEndBracket();
                     currentPart.AppendFormat("^{0}", expression.Arguments[1]);
                     bracketsEnabled = false;
                     break;
@@ -369,6 +370,8 @@ namespace Umbraco.Examine.Linq
                     if (expression.Arguments.Any())
                         VisitExpression(expression.Arguments[0]);
                     VisitExpression(expression.Object);
+                    if (expression.Arguments[0] is BinaryExpression)
+                        addEndBracket();
                     fuzzy = 0;
                     bracketsEnabled = false;
                     break;
