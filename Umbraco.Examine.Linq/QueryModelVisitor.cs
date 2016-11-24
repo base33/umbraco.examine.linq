@@ -13,7 +13,8 @@ namespace Umbraco.Examine.Linq
 {
     public class QueryModelVisitor : QueryModelVisitorBase
     {
-        public List<StringBuilder> queries = new List<StringBuilder>();
+        public List<StringBuilder> andQueries = new List<StringBuilder>();
+        public List<StringBuilder> notQueries = new List<StringBuilder>();
         public int take = -1;
         public int skip = -1;
 
@@ -22,7 +23,15 @@ namespace Umbraco.Examine.Linq
             bool alreadyHasQuery = false;
 
             var query = new StringBuilder();
-            queries.Add(query);
+
+            if (whereClause.Predicate.NodeType == ExpressionType.Not || whereClause.Predicate.NodeType == ExpressionType.NotEqual)
+            {
+                notQueries.Add(query);
+            }
+            else
+            {
+                andQueries.Add(query);
+            }
 
             ExpressionTreeVisitor visitor = new ExpressionTreeVisitor(query);
             visitor.VisitExpression(whereClause.Predicate);
@@ -32,13 +41,13 @@ namespace Umbraco.Examine.Linq
 
         public override void VisitMainFromClause(Remotion.Linq.Clauses.MainFromClause fromClause, QueryModel queryModel)
         {
-            queries = new List<StringBuilder>();
+            andQueries = new List<StringBuilder>();
 
             NodeTypeAliasAttribute attribute = (NodeTypeAliasAttribute)fromClause.ItemType.GetCustomAttributes(typeof(NodeTypeAliasAttribute), false).FirstOrDefault();
 
             if (attribute != null)
             {
-                queries.Add(new StringBuilder(string.Format("nodeTypeAlias:{0}", attribute.Name)));
+                andQueries.Add(new StringBuilder(string.Format("nodeTypeAlias:{0}", attribute.Name)));
             }
             
             base.VisitMainFromClause(fromClause, queryModel);

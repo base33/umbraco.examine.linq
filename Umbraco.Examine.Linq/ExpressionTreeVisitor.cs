@@ -181,23 +181,10 @@ namespace Umbraco.Examine.Linq
 
                 operation = currentPart.ToString().Substring(currentPart.Length - 2);
 
-                if (operation == "eq")
+                if (operation == "eq" || operation == "ne")
                 {
                     var formattedDateTime = formatDateTime(fieldName, (DateTime)expression.Value);
                     value = $"\"{formattedDateTime}\"";
-                }
-                else if (operation == "ne")
-                {
-                    var formattedDateTime = formatDateTime("createDate", (DateTime)expression.Value, true);
-                    //we will do a < and then >
-                    operation = "gt";
-                    handleRangeOperation(formattedDateTime, minRange, maxRange, operation, ref value);
-
-                    //we want to now create the greater than expression
-                    value += " OR " + fieldName;
-                    operation = "lt";
-                    formattedDateTime = formatDateTime(fieldName, (DateTime)expression.Value);
-                    handleRangeOperation(formattedDateTime, minRange, maxRange, operation, ref value);
                 }
                 else
                 {
@@ -214,24 +201,10 @@ namespace Umbraco.Examine.Linq
             else if(expression.Value is int || expression.Value is double)
             {
                 operation = currentPart.ToString().Substring(currentPart.Length - 2);
-                if(operation == "eq")
+                if(operation == "eq" || operation == "ne")
                 {
                     var formattedInt = expression.Value is double ? (Convert.ToInt64((double)expression.Value)).ToString() : ((int)expression.Value).ToString();
                     value = formattedInt;
-                }
-                else if (operation == "ne")
-                {
-                    var formattedGt = expression.Value is double ? (Convert.ToInt64((double)expression.Value - 1)).ToString() : ((int)expression.Value - 1).ToString();
-                    var formattedLt = expression.Value is double ? (Convert.ToInt64((double)expression.Value + 1)).ToString() : ((int)expression.Value + 1).ToString();
-                    string fieldName = currentPart.ToString().Substring(0, currentPart.Length - 2);
-                    //we will do a < and then >
-                    operation = "gt";
-                    handleRangeOperation(formattedGt, "\\-99999999999999999", "99999999999999999", operation, ref value);
-
-                    //we want to now create the greater than expression
-                    value += " OR " + fieldName;
-                    operation = "lt";
-                    handleRangeOperation(formattedLt, "\\-99999999999999999", "99999999999999999", operation, ref value);
                 }
                 else
                 {
