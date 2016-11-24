@@ -19,3 +19,6 @@
 /Umbraco.Examine.Linq.Tests/bin
 /Umbraco.Examine.Linq.Tests/obj
 /Umbraco.Examine.Linq/bin
+bin/
+obj/
+.vs/config/applicationhost.config
