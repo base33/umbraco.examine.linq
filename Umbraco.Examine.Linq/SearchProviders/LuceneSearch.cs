@@ -25,10 +25,15 @@ namespace Umbraco.Examine.Linq.SearchProviders
             IndexName = indexName;
         }
 
-        public IEnumerable<SearchResult> Search(string query)
+        public IEnumerable<SearchResult> Search(string query, int skip, int take)
         {
             LuceneSearcher searcher = ExamineManager.Instance.SearchProviderCollection[IndexName] as LuceneSearcher;
-            return searcher.Search(searcher.CreateSearchCriteria().RawQuery(query)).ToList();
+
+            var results = searcher.Search(searcher.CreateSearchCriteria().RawQuery(query)).Skip(skip);
+
+            if (take > -1)
+                results = results.Take(take);
+            return results.ToList();
         }
     }
 }

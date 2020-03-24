@@ -26,10 +26,11 @@ namespace Umbraco.Examine.Linq.SearchProviders
             IndexName = indexName;
         }
 
-        public IEnumerable<SearchResult> Search(string query)
+        public IEnumerable<SearchResult> Search(string query, int skip, int take)
         {
             ISearchCriteria criteria = null;
             var searcher = ExamineManager.Instance.SearchProviderCollection[IndexName];
+            
 
             if (searchQueryCache.ContainsKey(query))
                 criteria = searchQueryCache[query];
@@ -40,7 +41,11 @@ namespace Umbraco.Examine.Linq.SearchProviders
                 searchQueryCache.Add(query, criteria);
             }
 
-            return searcher.Search(criteria);
+            var results = searcher.Search(criteria).Skip(skip);
+
+            if (take > -1)
+                results = results.Take(take);
+            return results.ToList();
         }
     }
 }

@@ -15,7 +15,7 @@ namespace Umbraco.Examine.Linq
     {
         public List<StringBuilder> queries = new List<StringBuilder>();
         public int take = -1;
-        public int skip = -1;
+        public int skip = 0;
 
         public override void VisitWhereClause(Remotion.Linq.Clauses.WhereClause whereClause, QueryModel queryModel, int index)
         {

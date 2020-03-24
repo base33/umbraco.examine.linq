@@ -20,7 +20,7 @@ namespace Umbraco.Examine.Linq.Tests
             var results = index.Where(r =>
                 !(r.Name.Contains("content page")).Fuzzy(0.2).Boost(10)
                 && !(r.Name.ContainsAll("something", "else", "hello").Boost(10) || r.Name != "home boo")
-                ).ToList();
+                ).Skip(2).Take(20).ToList();
 
             //IEnumerable<Result> results = (from r in index.AsQueryable()
             //                               where r.Name.Contains("boo").Boost(10)
