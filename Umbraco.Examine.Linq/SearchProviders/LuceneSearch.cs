@@ -25,11 +25,15 @@ namespace Umbraco.Examine.Linq.SearchProviders
             IndexName = indexName;
         }
 
-        public IEnumerable<SearchResult> Search(string query, int skip, int take)
+        public IEnumerable<SearchResult> Search(string query, int skip, int take, string orderByField, bool orderByAsc)
         {
             LuceneSearcher searcher = ExamineManager.Instance.SearchProviderCollection[IndexName] as LuceneSearcher;
+            var searchCriteria = searcher.CreateSearchCriteria().RawQuery(query);
 
-            var results = searcher.Search(searcher.CreateSearchCriteria().RawQuery(query)).Skip(skip);
+            if (orderByField != "")
+                searchCriteria = orderByAsc ? searchCriteria.OrderBy(new[] { orderByField }).Compile() : searchCriteria.OrderByDescending(new[] { orderByField }).Compile();
+
+            var results = searcher.Search(searchCriteria).Skip(skip);
 
             if (take > -1)
                 results = results.Take(take);

@@ -26,7 +26,8 @@ namespace Umbraco.Examine.Linq
         {
             var visitor = new QueryModelVisitor();
             visitor.VisitQueryModel(queryModel);
-            var searchResults = Searcher.Search(string.Join(" AND ", visitor.queries), visitor.skip, visitor.take);
+
+            var searchResults = Searcher.Search(string.Join(" AND ", visitor.queries), visitor.skip, visitor.take, visitor.orderByField, visitor.orderByAsc);
 
             return (IEnumerable<T>)Mapper.Map(searchResults);
         }

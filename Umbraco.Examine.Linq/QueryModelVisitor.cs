@@ -16,11 +16,11 @@ namespace Umbraco.Examine.Linq
         public List<StringBuilder> queries = new List<StringBuilder>();
         public int take = -1;
         public int skip = 0;
+        public string orderByField = "";
+        public bool orderByAsc = true;
 
         public override void VisitWhereClause(Remotion.Linq.Clauses.WhereClause whereClause, QueryModel queryModel, int index)
         {
-            bool alreadyHasQuery = false;
-
             var query = new StringBuilder();
             queries.Add(query);
 
@@ -59,6 +59,24 @@ namespace Umbraco.Examine.Linq
                     skip = (int)((ConstantExpression)((SkipResultOperator)resultOperator).Count).Value;
             }
             base.VisitQueryModel(queryModel);
+        }
+
+        public override void VisitOrderByClause(OrderByClause orderByClause, QueryModel queryModel, int index)
+        {
+            var expression = orderByClause.Orderings[0].Expression as MemberExpression;
+            var attr = expression.Member.GetCustomAttributes(typeof(Umbraco.Examine.Linq.Attributes.FieldAttribute), false);
+
+            string fieldName = "";
+
+            if (attr.Length > 0)
+                fieldName = ((FieldAttribute)attr[0]).Name;
+            else
+            {
+                fieldName = orderByClause.Orderings[0].Expression.Type.Name;
+            }
+
+            orderByAsc = orderByClause.Orderings[0].OrderingDirection == OrderingDirection.Asc;
+            orderByField = fieldName;
         }
     }
 }

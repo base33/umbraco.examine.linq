@@ -26,7 +26,7 @@ namespace Umbraco.Examine.Linq.SearchProviders
             IndexName = indexName;
         }
 
-        public IEnumerable<SearchResult> Search(string query, int skip, int take)
+        public IEnumerable<SearchResult> Search(string query, int skip, int take, string orderByField, bool orderByAsc)
         {
             ISearchCriteria criteria = null;
             var searcher = ExamineManager.Instance.SearchProviderCollection[IndexName];
@@ -38,6 +38,10 @@ namespace Umbraco.Examine.Linq.SearchProviders
             {
                 criteria = searcher.CreateSearchCriteria();
                 criteria = criteria.RawQuery(query);
+
+                if (orderByField != "")
+                    criteria = orderByAsc ? criteria.OrderBy(new[] { orderByField }).Compile() : criteria.OrderByDescending(new[] { orderByField }).Compile();
+
                 searchQueryCache.Add(query, criteria);
             }
 
@@ -45,6 +49,7 @@ namespace Umbraco.Examine.Linq.SearchProviders
 
             if (take > -1)
                 results = results.Take(take);
+
             return results.ToList();
         }
     }

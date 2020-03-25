@@ -9,6 +9,6 @@ namespace Umbraco.Examine.Linq
 {
     public interface ISearcher
     {
-        IEnumerable<SearchResult> Search(string query, int skip, int take);
+        IEnumerable<SearchResult> Search(string query, int skip, int take, string orderByField, bool orderByAsc);
     }
 }

@@ -10,7 +10,7 @@ namespace Umbraco.Examine.Linq.Tests
     public class TestSearcher : ISearcher
     {
 
-        public IEnumerable<SearchResult> Search(string query, int skip, int take)
+        public IEnumerable<SearchResult> Search(string query, int skip, int take, string orderByField, bool orderByAsc)
         {
             return new List<SearchResult>();
         }
